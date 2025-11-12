@@ -142,6 +142,8 @@ E = 15 - рёбра
 
 # Пример ввода
 <img width="278" height="50" alt="image" src="https://github.com/user-attachments/assets/50d6250a-b9c4-4d8f-9f02-da78ae85a86b" />
+
+
 # Пример вывода
 Попытка раскраски с 1 цветами:
 Температура: 100.00, Конфликтов: 15
