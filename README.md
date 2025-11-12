@@ -1,1 +1,110 @@
-# -12.11.2025
+#Подробное описание работы кода по шагам
+##Шаг 1: Инициализация графа
+python
+graph = {
+    0: [1, 2, 3],
+    1: [0, 2, 4, 5],
+    # ... остальные вершины
+}
+vertices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+Что происходит: Создается структура данных графа в виде словаря смежности, где ключ - номер вершины, значение - список смежных вершин.
+##Шаг 2: Функция подсчета конфликтов
+python
+def count_conflicts(coloring):
+    conflicts = 0
+    for vertex in vertices:
+        for neighbor in graph[vertex]:
+            if coloring[vertex] == coloring[neighbor]:
+                conflicts += 1
+    return conflicts // 2
+Что происходит:
+Проходим по всем вершинам графа
+Для каждой вершины проверяем всех ее соседей
+Если цвет вершины совпадает с цветом соседа, увеличиваем счетчик конфликтов
+Делим результат на 2, так как каждое ребро проверяется дважды
+##Шаг 3: Основной алгоритм имитации отжига
+python
+def simulated_annealing():
+    for num_colors in range(1, 11):
+        # Шаг 3.1: Создание начальной раскраски
+        coloring = {}
+        for vertex in vertices:
+            coloring[vertex] = random.randint(0, num_colors - 1)
+Что происходит: Для каждого количества цветов от 1 до 10 создается случайная начальная раскраска.
+##Шаг 4: Параметры алгоритма отжига
+python
+temperature = 100.0
+cooling_rate = 0.95
+min_temperature = 0.1
+iteration = 0
+Что происходит: Устанавливаются начальные параметры:
+Начальная температура: 100.0
+Коэффициент охлаждения: 0.95 (температура умножается на это значение каждый шаг)
+Минимальная температура: 0.1 (алгоритм останавливается при достижении)
+##Шаг 5: Главный цикл отжига
+python
+while temperature > min_temperature:
+    current_conflicts = count_conflicts(coloring)
+    
+    # Вывод прогресса каждые 50 итераций
+    if iteration % 50 == 0:
+        print(f"Температура: {temperature:.2f}, Конфликтов: {current_conflicts}")
+Что происходит: На каждой итерации подсчитывается текущее количество конфликтов и выводится прогресс.
+##Шаг 6: Проверка нахождения решения
+python
+if current_conflicts == 0:
+    print(f"Найдена допустимая раскраска с {num_colors} цветами!")
+    return coloring, num_colors
+Что происходит: Если конфликтов нет - решение найдено, алгоритм завершается.
+##Шаг 7: Генерация соседнего решения
+python
+new_coloring = coloring.copy()
+random_vertex = random.choice(vertices)
+current_color = new_coloring[random_vertex]
+
+possible_colors = [c for c in range(num_colors) if c != current_color]
+if possible_colors:
+    new_coloring[random_vertex] = random.choice(possible_colors)
+Что происходит:
+
+Создается копия текущей раскраски
+
+Выбирается случайная вершина
+
+Генерируется список возможных новых цветов (все, кроме текущего)
+
+Вершине присваивается случайный новый цвет из возможных
+
+##Шаг 8: Критерий принятия решения
+python
+new_conflicts = count_conflicts(new_coloring)
+delta = new_conflicts - current_conflicts
+
+if delta < 0:
+    coloring = new_coloring
+else:
+    probability = math.exp(-delta / temperature)
+    if random.random() < probability:
+        coloring = new_coloring
+Что происходит:
+
+Если новое решение лучше (delta < 0) - всегда принимаем его
+
+Если хуже - принимаем с вероятностью exp(-delta/temperature)
+
+Вероятность принятия худшего решения уменьшается с понижением температуры
+
+##Шаг 9: Охлаждение
+python
+temperature *= cooling_rate
+iteration += 1
+Что происходит: Температура уменьшается, счетчик итераций увеличивается.
+
+##Шаг 10: Завершение и вывод результатов
+python
+result_coloring, colors_used = simulated_annealing()
+
+if result_coloring:
+    print(f"Количество использованных цветов: {colors_used}")
+    print(f"Раскраска вершин: {result_coloring}")
+Что происходит: Выводится найденное решение - количество цветов и раскраска вершин.
